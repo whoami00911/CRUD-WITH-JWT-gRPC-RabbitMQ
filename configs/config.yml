@@ -12,3 +12,7 @@ db_tables:
   tokens: refresh_tokens
 
 hashphrase: somesalte
+
+logdb:
+  ip: 
+  port:

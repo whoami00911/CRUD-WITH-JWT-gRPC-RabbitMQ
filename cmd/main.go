@@ -50,7 +50,6 @@ func main() {
 	repo := repository.NewRepository(repository.PostgresqlConnect(), logger)
 	service := service.NewService(repo, hash, logger)
 	handler := handlers.NewHandlerAssetsResponse(logger, service)
-
 	srv := new(server.Server)
 	go func() {
 		err := srv.StartServer(handler.InitRoutes(), viper.GetString("server.port"))

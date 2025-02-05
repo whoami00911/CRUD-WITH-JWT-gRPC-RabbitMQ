@@ -96,6 +96,6 @@ func connectWithRetry(cfg *Config) *sql.DB {
 
 	// Возвращаем ошибку, если не удалось подключиться
 	logger.Error(fmt.Sprintf("Retry connect to DB faild: %s", err))
-	fmt.Println(fmt.Sprintf("не удалось подключиться к базе данных после %d попыток: %s", cfg.MaxRetries, err))
+	fmt.Printf("не удалось подключиться к базе данных после %d попыток: %s", cfg.MaxRetries, err)
 	return nil
 }
