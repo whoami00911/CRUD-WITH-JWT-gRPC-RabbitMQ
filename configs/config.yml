@@ -2,7 +2,7 @@ server:
   port: 8080
 
 token:
-  token_ttl: 1m
+  token_ttl: 1500m
   token_key: petersburgSalt
   refreshToken_ttl: 1440h
 
@@ -13,6 +13,6 @@ db_tables:
 
 hashphrase: somesalte
 
-logdb:
-  ip: 
-  port:
+grpc:
+  ip: localhost
+  port: 8889

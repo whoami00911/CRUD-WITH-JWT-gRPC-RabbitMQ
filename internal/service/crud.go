@@ -15,21 +15,24 @@ func NewServiceCRUD(repo repository.CRUDList) *repositoryCRUD {
 	}
 }
 
-func (rc *repositoryCRUD) AddEntity(ar domain.AssetData) {
-	rc.repo.AddEntity(ar)
+func (rc *repositoryCRUD) AddEntity(ar domain.AssetData) error {
+	return rc.repo.AddEntity(ar)
 }
 func (rc *repositoryCRUD) DeleteAllEntitiesDB() {
 	rc.repo.DeleteAllEntitiesDB()
 }
-func (rc *repositoryCRUD) DeleteEntityDB(ip string) {
-	rc.repo.DeleteEntityDB(ip)
+func (rc *repositoryCRUD) DeleteEntityDB(ip string) error {
+	return rc.repo.DeleteEntityDB(ip)
 }
-func (rc *repositoryCRUD) GetEntity(ip string) *domain.AssetData {
+func (rc *repositoryCRUD) GetEntity(ip string) (*domain.AssetData, error) {
 	return rc.repo.GetEntity(ip)
 }
 func (rc *repositoryCRUD) GetEntities() []domain.AssetData {
 	return rc.repo.GetEntities()
 }
-func (rc *repositoryCRUD) UpdateEntity(ar domain.AssetData) {
-	rc.repo.UpdateEntity(ar)
+func (rc *repositoryCRUD) UpdateEntity(ar domain.AssetData) error {
+	return rc.repo.UpdateEntity(ar)
+}
+func (rc *repositoryCRUD) GetEntityById(ip string) (int, error) {
+	return rc.repo.GetEntityById(ip)
 }

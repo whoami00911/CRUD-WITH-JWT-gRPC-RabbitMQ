@@ -1,14 +1,18 @@
 package service
 
 import (
+	"context"
 	"webPractice1/internal/domain"
 	"webPractice1/internal/repository"
 	"webPractice1/pkg/hasher"
 	"webPractice1/pkg/logger"
+
+	"github.com/whoami00911/gRPC-server/pkg/grpcPb"
 )
 
 type Autherization interface {
 	CreateUser(user domain.User) (int, error)
+	GetUserId(user domain.UserSignIn) (int, error)
 }
 
 type Session interface {
@@ -20,24 +24,31 @@ type Session interface {
 }
 
 type CRUDList interface {
-	AddEntity(ar domain.AssetData)
+	AddEntity(ar domain.AssetData) error
 	DeleteAllEntitiesDB()
-	DeleteEntityDB(ip string)
-	GetEntity(ip string) *domain.AssetData
+	DeleteEntityDB(ip string) error
+	GetEntity(ip string) (*domain.AssetData, error)
 	GetEntities() []domain.AssetData
-	UpdateEntity(ar domain.AssetData)
+	UpdateEntity(ar domain.AssetData) error
+	GetEntityById(ip string) (int, error)
+}
+
+type Log interface {
+	SendLogRequest(ctx context.Context, logRequest grpcPb.LogItem) error
 }
 
 type Service struct {
 	Autherization
 	CRUDList
 	Session
+	Log
 }
 
-func NewService(repos *repository.Repository, hash *hasher.Hash, logger *logger.Logger) *Service {
+func NewService(repos *repository.Repository, hash *hasher.Hash, logger *logger.Logger, log Log) *Service {
 	return &Service{
 		Autherization: NewAuthService(repos.Authorization, hash),
 		CRUDList:      NewServiceCRUD(repos.CRUDList),
 		Session:       newSessionRepo(repos.Session, repos.Authorization, hash, logger),
+		Log:           log,
 	}
 }

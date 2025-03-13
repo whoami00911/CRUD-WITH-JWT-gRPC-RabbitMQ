@@ -4,6 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS public."AbuseEntity"
 (
+	"Id" BIGSERIAL NOT NULL,
     "ipAddress" character varying(15) COLLATE pg_catalog."default",
     "isPublic" boolean,
     "ipVersion" integer,
@@ -30,7 +31,7 @@ ALTER TABLE IF EXISTS public."AbuseEntity"
 
 CREATE TABLE IF NOT EXISTS public.refresh_tokens
 (
-    id integer NOT NULL DEFAULT nextval('refresh_tokens_id_seq'::regclass),
+    id BIGSERIAL NOT NULL,
     "userId" integer NOT NULL,
     "refreshToken" character varying(255) COLLATE pg_catalog."default" NOT NULL,
     "expiresAt" timestamp without time zone NOT NULL,
@@ -53,7 +54,7 @@ ALTER TABLE IF EXISTS public.refresh_tokens
 -- DROP TABLE IF EXISTS public.users;
 CREATE TABLE IF NOT EXISTS public.users
 (
-    id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    id BIGSERIAL NOT NULL,
     name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     username character varying(255) COLLATE pg_catalog."default" NOT NULL,
     password_hash character varying(255) COLLATE pg_catalog."default" NOT NULL,

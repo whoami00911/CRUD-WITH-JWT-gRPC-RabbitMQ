@@ -8,13 +8,13 @@ import (
 func (ad *AuthDatabase) CreateUser(user domain.User) (int, error) {
 	tx, err := ad.db.Begin()
 	if err != nil {
-		ad.logger.Error(fmt.Sprintf("Truntransaction not started: %s", err))
+		ad.logger.Error(fmt.Sprintf("transaction not started: %s", err))
 		return 0, err
 	}
 	defer func() {
 		if err != nil {
 			tx.Rollback()
-			ad.logger.Error(fmt.Sprintf("Something wrong with truntransaction: %s", err))
+			ad.logger.Error(fmt.Sprintf("Something wrong with transaction: %s", err))
 		} else {
 			tx.Commit()
 		}
@@ -28,16 +28,16 @@ func (ad *AuthDatabase) CreateUser(user domain.User) (int, error) {
 	return id, err
 }
 
-func (ad *AuthDatabase) GetUser(user, password string) int {
+func (ad *AuthDatabase) GetUser(user, password string) (int, error) {
 	tx, err := ad.db.Begin()
 	if err != nil {
-		ad.logger.Error(fmt.Sprintf("Truntransaction not started: %s", err))
-		return 0
+		ad.logger.Error(fmt.Sprintf("transaction not started: %s", err))
+		return 0, err
 	}
 	defer func() {
 		if err != nil {
 			tx.Rollback()
-			ad.logger.Error(fmt.Sprintf("Something wrong with truntransaction: %s", err))
+			ad.logger.Error(fmt.Sprintf("Something wrong with transaction: %s", err))
 		} else {
 			tx.Commit()
 		}
@@ -46,7 +46,7 @@ func (ad *AuthDatabase) GetUser(user, password string) int {
 	row := tx.QueryRow(`SELECT "id" FROM "`+ad.usersDb+`" WHERE "username" = $1 AND "password_hash" = $2`, user, password)
 	if err := row.Scan(&id); err != nil {
 		ad.logger.Error(fmt.Sprintf("Get Scan method error: %s", err))
-		return 0
+		return 0, err
 	}
-	return id
+	return id, nil
 }

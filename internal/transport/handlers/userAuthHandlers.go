@@ -3,9 +3,11 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"time"
 	"webPractice1/internal/domain"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whoami00911/gRPC-server/pkg/grpcPb"
 )
 
 // AuthSignUp godoc
@@ -33,6 +35,14 @@ func (har *HandlerAssetsResponse) singUp(c *gin.Context) {
 	c.JSON(200, map[string]int{
 		"id": id,
 	})
+	if err = har.service.Log.SendLogRequest(c, grpcPb.LogItem{
+		Entity:    grpcPb.ENTITY_USER,
+		Action:    grpcPb.ACTION_REGISTER,
+		UserID:    int64(id),
+		Timestamp: time.Now(),
+	}); err != nil {
+		har.Logger.Error(fmt.Sprintf("Send log request method error: %s", err))
+	}
 }
 
 // AuthSignIn godoc
@@ -47,7 +57,7 @@ func (har *HandlerAssetsResponse) singUp(c *gin.Context) {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /auth/signIn [post]
 func (har *HandlerAssetsResponse) singIn(c *gin.Context) {
-	var input *domain.UserSignIn
+	var input domain.UserSignIn
 	if err := c.BindJSON(&input); err != nil {
 		har.Logger.Error(fmt.Sprintf("BindJSON method error: %s", err))
 		c.JSON(400, gin.H{"error": "Invalid data input"})
@@ -68,6 +78,18 @@ func (har *HandlerAssetsResponse) singIn(c *gin.Context) {
 		"token":        token,
 		"RefreshToken": refreshToken,
 	})
+	id, err := har.service.GetUserId(input)
+	if err != nil {
+		har.Logger.Error(fmt.Sprintf("GetUserId method error: %s", err))
+	}
+	if err = har.service.Log.SendLogRequest(c, grpcPb.LogItem{
+		Entity:    grpcPb.ENTITY_USER,
+		Action:    grpcPb.ACTION_LOGIN,
+		UserID:    int64(id),
+		Timestamp: time.Now(),
+	}); err != nil {
+		har.Logger.Error(fmt.Sprintf("Send log request method error: %s", err))
+	}
 }
 
 // RefreshHandler godoc

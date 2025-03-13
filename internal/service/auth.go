@@ -29,3 +29,8 @@ func (as *AuthService) CreateUser(user domain.User) (int, error) {
 	user.Password = as.hash.GenHashPass(user.Password)
 	return as.repo.CreateUser(user)
 }
+
+func (as *AuthService) GetUserId(user domain.UserSignIn) (int, error) {
+	user.Password = as.hash.GenHashPass(user.Password)
+	return as.repo.GetUser(user.Username, user.Password)
+}

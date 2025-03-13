@@ -13,6 +13,7 @@ import (
 	"webPractice1/internal/repository"
 	"webPractice1/internal/server"
 	"webPractice1/internal/service"
+	grpcClient "webPractice1/internal/transport/grpc"
 	"webPractice1/internal/transport/handlers"
 	"webPractice1/pkg/hasher"
 	"webPractice1/pkg/logger"
@@ -44,11 +45,13 @@ func init() {
 		log.Fatalf("Ошибка при чтении конфигурации: %v", err)
 	}
 }
+
 func main() {
 	logger := logger.GetLogger()
 	hash := hasher.NewHashInit(viper.GetString("hashphrase"))
 	repo := repository.NewRepository(repository.PostgresqlConnect(), logger)
-	service := service.NewService(repo, hash, logger)
+	logService := grpcClient.NewClient(logger)
+	service := service.NewService(repo, hash, logger, logService)
 	handler := handlers.NewHandlerAssetsResponse(logger, service)
 	srv := new(server.Server)
 	go func() {
@@ -69,9 +72,8 @@ func main() {
 		logger.Error(fmt.Sprintf("Shutdown error: %s", err))
 	}
 
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 1 seconds.")
-	}
+	log.Println("timeout of 1 seconds.")
+	<-ctx.Done()
+
 	log.Println("Server exiting")
 }

@@ -16,8 +16,8 @@ func (s *Server) StartServer(router *gin.Engine, port string) error {
 	s.httpServer = &http.Server{
 		Addr:         ":" + port,
 		Handler:      router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  3 * time.Second,
+		WriteTimeout: 3 * time.Second,
 	}
 	return s.httpServer.ListenAndServe()
 
