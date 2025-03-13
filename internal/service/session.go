@@ -40,11 +40,18 @@ func (usr *updateSessionRepo) GetRToken(token string) (domain.RefreshSession, er
 func (usr *updateSessionRepo) GenTokens(user, password string) (string, string, error) {
 	//хешировать здесь
 	password = usr.hash.GenHashPass(password)
-	id := usr.auth.GetUser(user, password)
+	id, err := usr.auth.GetUser(user, password)
+	if err != nil {
+		usr.logger.Error(fmt.Sprintf("Get User error: %s", err))
+	}
 	if id == 0 {
 		return "", "", domain.ErrUserNotFound
 	}
 	ttl, err := time.ParseDuration(viper.GetString("token.token_ttl"))
+	if err != nil {
+		usr.logger.Error(fmt.Sprintf("error time parse: %s", err))
+		return "", "", err
+	}
 	refreshTtl, err := time.ParseDuration(viper.GetString("token.refreshToken_ttl"))
 	if err != nil {
 		usr.logger.Error(fmt.Sprintf("error time parse: %s", err))
@@ -120,6 +127,10 @@ func (usr *updateSessionRepo) UpdateTokens(token string) (string, string, error)
 	}
 	//usr.logger.Info(fmt.Sprintf("Checking token expiry: ExpiresAt=%v, Now=%v", session.ExpiresAt, time.Now().UTC()))
 	ttl, err := time.ParseDuration(viper.GetString("token.token_ttl"))
+	if err != nil {
+		usr.logger.Error(fmt.Sprintf("error time parse: %s", err))
+		return "", "", err
+	}
 	refreshTtl, err := time.ParseDuration(viper.GetString("token.refreshToken_ttl"))
 	if err != nil {
 		usr.logger.Error(fmt.Sprintf("error time parse: %s", err))

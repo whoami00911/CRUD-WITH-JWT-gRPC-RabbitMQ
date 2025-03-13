@@ -2,7 +2,7 @@ server:
   port: 8080
 
 token:
-  token_ttl: 1m
+  token_ttl: 140h
   token_key: petersburgSalt
   refreshToken_ttl: 1440h
 
@@ -13,6 +13,6 @@ db_tables:
 
 hashphrase: somesalte
 
-logdb:
-  ip: 
-  port:
+rabbitmq:
+  url: amqp://guest:guest@localhost:5672/
+  queueName: logs

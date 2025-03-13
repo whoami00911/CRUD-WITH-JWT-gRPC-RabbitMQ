@@ -14,6 +14,7 @@ import (
 	"webPractice1/internal/server"
 	"webPractice1/internal/service"
 	"webPractice1/internal/transport/handlers"
+	"webPractice1/internal/transport/rabbitmq"
 	"webPractice1/pkg/hasher"
 	"webPractice1/pkg/logger"
 
@@ -48,7 +49,8 @@ func main() {
 	logger := logger.GetLogger()
 	hash := hasher.NewHashInit(viper.GetString("hashphrase"))
 	repo := repository.NewRepository(repository.PostgresqlConnect(), logger)
-	service := service.NewService(repo, hash, logger)
+	producer := rabbitmq.NewRabbitMQProducer(logger)
+	service := service.NewService(repo, hash, logger, producer)
 	handler := handlers.NewHandlerAssetsResponse(logger, service)
 	srv := new(server.Server)
 	go func() {
@@ -68,10 +70,8 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		logger.Error(fmt.Sprintf("Shutdown error: %s", err))
 	}
+	log.Println("timeout of 1 seconds.")
+	<-ctx.Done()
 
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 1 seconds.")
-	}
 	log.Println("Server exiting")
 }

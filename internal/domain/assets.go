@@ -15,6 +15,7 @@ type AssetResponse struct {
 	Mu    sync.Mutex
 }
 type AssetData struct {
+	Id                   string `json:"Id"`
 	IPAddress            string `json:"ipAddress"`            // IP-адрес актива
 	IsPublic             bool   `json:"isPublic"`             // Является ли IP-адрес публичным
 	IPVersion            int    `json:"ipVersion"`            // Версия IP (4 или 6)
